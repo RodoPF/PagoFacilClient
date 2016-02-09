@@ -1,6 +1,6 @@
 <?php
 require_once 'lib/vendor/me/sender.php';
-$test = new Rest_Json_Sender();
+$test = new Soap_Sender();
 $test->type = 'get';
 $test->params = array(
 	'nombre'=>'Juan',
@@ -13,7 +13,7 @@ $test->params = array(
 	'monto'=>20.00,
 	'idSucursal'=>'e147ee31531d815e2308d6d6d39929ab599deb98',
 	'idUsuario'=>'f541b3f11f0f9b3fb33499684f22f6d711f2af58',
-	'idServicio'=>3,
+	'idServicio'=>'3',
 	'email'=>'rodo@pagofacil.net',
 	'telefono'=>5512345678,
 	'celular'=>5587654321,

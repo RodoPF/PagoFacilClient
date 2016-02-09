@@ -14,11 +14,14 @@ abstract class Base_Sender{
 		$conn = curl_init();
 		curl_setopt($conn, CURLOPT_URL, $this->host);
 		curl_setopt($conn, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($conn, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($conn, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($conn, CURLOPT_POST, TRUE);
 		curl_setopt($conn, CURLOPT_POSTFIELDS, $this->prepare_params());
+		curl_setopt($conn, CURLOPT_VERBOSE, true);
 		$result = curl_exec($conn);
 		curl_close($conn);
+		
 		return $result;
 	}
 	
@@ -26,6 +29,7 @@ abstract class Base_Sender{
 		$conn = curl_init();
 		curl_setopt($conn, CURLOPT_URL, $this->host.'?'.$this->prepare_params());
 		curl_setopt($conn, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($conn, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($conn, CURLOPT_RETURNTRANSFER, TRUE);
 		$result = curl_exec($conn);
 		curl_close($conn);
@@ -36,6 +40,7 @@ abstract class Base_Sender{
 		$conn = curl_init();
 		curl_setopt($conn, CURLOPT_URL, $this->host);
 		curl_setopt($conn, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($conn, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($conn, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($conn, CURLOPT_CUSTOMREQUEST, 'PUT');
 		curl_setopt($conn, CURLOPT_POSTFIELDS, $this->prepare_params());
@@ -57,7 +62,7 @@ abstract class Base_Sender{
 }
 
 class Rest_XML_Sender extends Base_Sender {
-	protected $host = 'http://pagofacil.local/public/Wsrtransaccion/';
+	protected $host = 'https://pagofacil.local/public/Wsrtransaccion/';
 	protected function prepare_params(){
 		$params = array(
 			'method'=>'transaccion',
@@ -74,7 +79,7 @@ class Rest_XML_Sender extends Base_Sender {
 }
 
 class Rest_Json_Sender extends Base_Sender {
-	protected $host = 'http://pagofacil.local/public/Wsrtransaccion/index/format/json';
+	protected $host = 'https://pagofacil.local/public/Wsrtransaccion/index/format/json';
 	protected function prepare_params(){
 		$params = array(
 			'method'=>'transaccion',
@@ -85,11 +90,13 @@ class Rest_Json_Sender extends Base_Sender {
 }
 
 class Soap_Sender extends Base_Sender {
-	protected $wsdl = 'http://pagofacil.local/public/Wsstransaccion/?wsdl';
+	protected $wsdl = 'https://pagofacil.local/public/Wsstransaccion/?wsdl';
 	
 	protected function send_soap(){
-		$client = new SoapClient($this->wsdl);
+		
+		$client = new SoapClient($this->wsdl, array('trace'=>1));
 		$result = $client->transaccion($this->params);
+		print_r($client->__getLastRequest());
 		return $result;
 	}
 	
@@ -100,5 +107,13 @@ class Soap_Sender extends Base_Sender {
 }
 
 class Form_Sender extends Base_Sender {
-	protected $host = 'http://pagofacil.local/public/Payform';
+	protected $host = 'https://pagofacil.local/public/Payform';
+}
+
+class Cash_Sender extends Base_Sender{
+	protected $host = 'https://pagofacil.local/public/cash/charge';
+}
+
+class Cash_Getter extends Base_Sender {
+	protected $host = 'https://pagofacil.local/public/cash/charges';
 }
